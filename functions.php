@@ -3,15 +3,42 @@ function pomana_child_scripts() {
     wp_enqueue_style( 'pomana-parent-style', get_template_directory_uri(). '/style.css' );
 }
 add_action( 'wp_enqueue_scripts', 'pomana_child_scripts' );
- 
-// Forzar numeración de tickets desde 2000 hasta 50000
-add_filter( 'woo_lottery_ticket_start_number', function( $start, $product_id ) {
-    return 1500;
-}, 10, 2 );
 
-add_filter( 'woo_lottery_max_tickets', function( $max, $product_id ) {
-    return 50000;
-}, 10, 2 );
+/**
+ * Fuerza configuración de WooCommerce Lottery (wpgenie)
+ * Basado en los meta keys reales encontrados en wp_postmeta.
+ * 
+ * Coloca en: functions.php del tema hijo.
+ */
+add_action( 'woocommerce_process_product_meta', 'mi_rifa_config_real', 20 );
+
+function mi_rifa_config_real( $post_id ) {
+    $product_type = isset( $_POST['product-type'] )
+        ? sanitize_text_field( $_POST['product-type'] )
+        : '';
+
+    if ( 'lottery' !== $product_type ) {
+        return;
+    }
+
+    // Total de tickets disponibles para vender (stock real de WooCommerce)
+    // 50000 - 1500 + 1 = 48501 tickets en el rango
+    update_post_meta( $post_id, '_stock', 48500 );
+    wc_update_product_stock( $post_id, 48500 );
+
+    // Número de ganadores
+    update_post_meta( $post_id, '_lottery_num_winners', 3 );
+
+    // Precio por ticket
+    update_post_meta( $post_id, '_lottery_price', 100 );
+
+    // Fechas de la rifa (formato que usa el plugin)
+    update_post_meta( $post_id, '_lottery_dates_from', '2026-03-09 00:00' );
+    update_post_meta( $post_id, '_lottery_dates_to',   '2026-08-02 16:00' );
+
+    // No permitir múltiples premios al mismo ganador
+    update_post_meta( $post_id, '_lottery_multiple_winner_per_user', 'no' );
+}
 
 /**  * Obtener números de boleto de la base de datos  
  * * @param int $order_id - ID del pedido  
@@ -84,6 +111,8 @@ add_action('woocommerce_order_details_after_order_table', 'mostrar_boletos_en_pe
 function mostrar_boletos_en_pedido($order) {     
     $order_id = $order->get_id();     
     $numeros = obtener_numeros_boleto($order_id);          
+    var_dump($numeros);
+    die();
     if (!empty($numeros)) {         
         echo '<section class="woocommerce-lottery-tickets" style="margin-top: 30px;">';         
         echo '<h2 style="color: #667eea; margin-bottom: 20px;">🎟️ Tus Números de Boleto</h2>';         
@@ -106,7 +135,7 @@ function mostrar_boletos_en_pedido($order) {
             echo '</div>';         
             }                  
         echo '</div>';         
-        echo '<p style="margin-top: 20px; font-size: 14px; opacity: 0.9; color:white;">✨ Guarda estos números para el día del sorteo</p>';         
+        echo '<p style="margin-top: 20px; font-size: 14px; opacity: 0.9; color: white;">✨ Guarda estos números para el día del sorteo</p>';         
         echo '</div>';         
         echo '</section>';     
         } 
