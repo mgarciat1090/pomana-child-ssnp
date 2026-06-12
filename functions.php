@@ -4,42 +4,7 @@ function pomana_child_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'pomana_child_scripts' );
 
-/**
- * Fuerza configuración de WooCommerce Lottery (wpgenie)
- * Basado en los meta keys reales encontrados en wp_postmeta.
- * 
- * Coloca en: functions.php del tema hijo.
- */
-add_action( 'woocommerce_process_product_meta', 'mi_rifa_config_real', 20 );
-
-function mi_rifa_config_real( $post_id ) {
-    $product_type = isset( $_POST['product-type'] )
-        ? sanitize_text_field( $_POST['product-type'] )
-        : '';
-
-    if ( 'lottery' !== $product_type ) {
-        return;
-    }
-
-    // Total de tickets disponibles para vender (stock real de WooCommerce)
-    // 50000 - 1500 + 1 = 48501 tickets en el rango
-    update_post_meta( $post_id, '_stock', 48500 );
-    wc_update_product_stock( $post_id, 48500 );
-
-    // Número de ganadores
-    update_post_meta( $post_id, '_lottery_num_winners', 3 );
-
-    // Precio por ticket
-    update_post_meta( $post_id, '_lottery_price', 100 );
-
-    // Fechas de la rifa (formato que usa el plugin)
-    update_post_meta( $post_id, '_lottery_dates_from', '2026-03-09 00:00' );
-    update_post_meta( $post_id, '_lottery_dates_to',   '2026-08-02 16:00' );
-
-    // No permitir múltiples premios al mismo ganador
-    update_post_meta( $post_id, '_lottery_multiple_winner_per_user', 'no' );
-}
-
+ 
 /**  * Obtener números de boleto de la base de datos  
  * * @param int $order_id - ID del pedido  
  * * @return array - Array de números de boleto  */ 
@@ -111,8 +76,6 @@ add_action('woocommerce_order_details_after_order_table', 'mostrar_boletos_en_pe
 function mostrar_boletos_en_pedido($order) {     
     $order_id = $order->get_id();     
     $numeros = obtener_numeros_boleto($order_id);          
-    var_dump($numeros);
-    die();
     if (!empty($numeros)) {         
         echo '<section class="woocommerce-lottery-tickets" style="margin-top: 30px;">';         
         echo '<h2 style="color: #667eea; margin-bottom: 20px;">🎟️ Tus Números de Boleto</h2>';         
@@ -182,15 +145,96 @@ function mostrar_boletos_admin_pedido($order) {
     } 
 }
 
-// Skip cart and go straight to checkout
-add_filter( 'woocommerce_add_to_cart_redirect', function() {
-    return wc_get_checkout_url();
+add_filter("woocommerce_paypal_payments_basic_checkout_validation_enabled", "__return_true");
+
+add_action('woocommerce_order_status_completed', 'fallback_insert_lottery_tickets', 20);
+add_action('woocommerce_order_status_processing', 'fallback_insert_lottery_tickets', 20);
+
+
+function fallback_insert_lottery_tickets($order_id) {
+    global $wpdb;
+
+    // Ver registros en el log para esta orden
+    $log_entries = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}wc_lottery_log WHERE orderid = %d",
+        $order_id
+    ));
+
+    if (empty($log_entries)) return;
+
+    // Cuántos tickets ya están insertados para esta orden
+    $already_inserted = intval($wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$wpdb->prefix}lottery_mt_tickets 
+         WHERE orderid = %d",
+        $order_id
+    )));
+
+    $total_in_log = count($log_entries);
+
+    // Si ya están todos, no hacer nada
+    if ($already_inserted >= $total_in_log) return;
+
+    // Insertar solo los faltantes (saltar los primeros $already_inserted)
+    $entries_to_insert = array_slice($log_entries, $already_inserted);
+
+    foreach ($entries_to_insert as $entry) {
+        // Generate a unique random ticket number (00001–99999) for this lottery
+        $ticket_min   = 1;
+        $ticket_max   = 50000;
+        $max_attempts = 100;
+        $random_ticket = null;
+
+        for ($attempt = 0; $attempt < $max_attempts; $attempt++) {
+            $candidate = random_int($ticket_min, $ticket_max);
+
+            // Check if this number already exists for this lottery
+            $exists = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->prefix}lottery_mt_tickets
+                 WHERE lottery_id = %d AND ticket_number = %d",
+                $entry->lottery_id,
+                $candidate
+            ));
+
+            if (intval($exists) === 0) {
+                $random_ticket = $candidate;
+                break;
+            }
+        }
+
+        // Safety: if we couldn't find a unique number after max attempts, skip and log
+        if ($random_ticket === null) {
+            error_log("[Lottery] Could not assign a unique ticket for order {$entry->orderid}, lottery {$entry->lottery_id} after {$max_attempts} attempts.");
+            continue;
+        }
+
+        $wpdb->insert(
+            $wpdb->prefix . 'lottery_mt_tickets',
+            [
+                'user_id'       => $entry->userid,
+                'orderid'       => $entry->orderid,
+                'lottery_id'    => $entry->lottery_id,
+                'ticket_number' => $random_ticket,
+                'created_at'    => $entry->date,
+            ],
+            ['%d', '%d', '%d', '%d', '%s']
+        );
+    }
+}
+
+ add_filter('rest_endpoints', function($endpoints) {
+    if (isset($endpoints['/wp/v2/users'])) unset($endpoints['/wp/v2/users']);
+    if (isset($endpoints['/wp/v2/users/(?P<id>[\d]+)'])) unset($endpoints['/wp/v2/users/(?P<id>[\d]+)']);
+    return $endpoints;
 });
 
-// Optional: skip cart page if someone visits it directly
-add_action( 'template_redirect', function() {
-    if ( is_cart() ) {
-        wp_redirect( wc_get_checkout_url() );
-        exit;
-    }
-});
+add_action('wp_head', function() {
+    echo "<script>
+    (function() {
+        var _orig = navigator.registerProtocolHandler;
+        navigator.registerProtocolHandler = function() {
+            console.warn('[Blocked] registerProtocolHandler called', arguments);
+            // no-op
+        };
+    })();
+    </script>";
+}, 1); // prioridad 1 = antes que cualquier otro script

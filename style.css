@@ -11,3 +11,384 @@ Tags: custom-header, custom-menu, featured-images, post-formats, sticky-post
 */
 /* Theme customization starts here
 ------------------------------------------------------- */
+/*
+Theme Name: Pomana Child
+Theme URI: https://pomana.modeltheme.com/
+Template: pomana
+Author: ModelTheme
+Author URI: http://modeltheme.com/
+Description: Lottery & Giveaways WordPress Theme
+Version: 1.10.3
+Text Domain: pomana
+Tags: custom-header, custom-menu, featured-images, post-formats, sticky-post
+*/
+/* Theme customization starts here
+------------------------------------------------------- */
+
+
+
+.wc-block-checkout .wc-block-must-login-prompt a{
+	color: darkorange !important;
+    font-size: 24px !important;
+	
+}
+
+.wc-block-checkout .wc-block-must-login-prompt a:hover{
+	text-decoration:underline !important;
+}
+
+.header-button a{
+	padding: 20px !important;
+}
+
+.top-cart{
+	top: 50px;
+    left: -50px;
+}
+.cart-number{
+	top: -30px;
+}
+
+.top-cart{
+	top: 30px;
+    left: -40px;
+	
+}
+
+.shop_cart{
+	top: 15px;
+    position: absolute;
+    left: -17px;
+    color: white;
+}
+.shop_cart:hover{
+    color: #a3a3a3;
+}
+.header-button a{
+	top: 15px;
+    position: absolute;
+}
+.cart-number{
+	top: -20px;
+}
+
+.top-cart i{
+	top: 15px;
+    position: absolute;
+}
+
+.woocommerce-notices-wrapper{
+	top: 990px;
+    position: relative;
+}
+
+.top-account{
+	top: 59px;
+    position: relative;
+    left: -80px;
+    font-size: 20px;
+}
+
+.top-account{
+	color: coral;
+}
+
+.main-content{
+	top: -200px;
+}
+
+.woocommerce-notices-wrapper{
+	top: 1000px;
+    position: relative;
+}
+
+.tabs-related{
+	top: 180px;
+}
+.main-content{
+	top: -160px;
+}
+i.fa.fa-user-circle {
+    color: white;
+}
+.woocommerce-notices-wrapper{
+	z-index: 10001;
+}
+
+
+
+.wc-block-checkout .wc-block-must-login-prompt a{
+	color: darkorange !important;
+    font-size: 24px !important;
+	
+}
+
+.wc-block-checkout .wc-block-must-login-prompt a:hover{
+	text-decoration:underline !important;
+}
+
+.header-button a{
+	padding: 20px !important;
+}
+
+.top-cart{
+	top: 50px;
+    left: -50px;
+}
+.cart-number{
+	top: -30px;
+}
+
+.top-cart{
+	top: 30px;
+    left: -40px;
+	
+}
+
+.shop_cart{
+	top: 15px;
+    position: absolute;
+    left: -17px;
+    color: white;
+}
+.shop_cart:hover{
+    color: #a3a3a3;
+}
+.header-button a{
+	top: 15px;
+    position: absolute;
+}
+.cart-number{
+	top: -20px;
+}
+
+.top-cart i{
+	top: 15px;
+    position: absolute;
+}
+
+.woocommerce-notices-wrapper{
+	top: 990px;
+    position: relative;
+}
+
+.top-account{
+	top: 59px;
+    position: relative;
+    left: -80px;
+    font-size: 20px;
+}
+
+.top-account{
+	color: coral;
+}
+
+.main-content{
+	top: -200px;
+}
+
+.woocommerce-notices-wrapper{
+	top: 1000px;
+    position: relative;
+}
+
+.tabs-related{
+	top: 180px;
+}
+.main-content{
+	top: -160px;
+}
+i.fa.fa-user-circle {
+    color: white;
+}
+.woocommerce-notices-wrapper{
+	z-index: 10001;
+}
+
+
+
+/* =========================================================
+   TOP-LINKS (.top-links.col-md-3) — Visual fix & alignment
+   ========================================================= */
+
+/* Convert the top-links wrapper to a flex row, vertically centered */
+.top-links {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-top: 0 !important;
+    padding: 0;
+    height: 100%;
+}
+
+/* Make the nav row flex too so the top-links can align with the logo/nav */
+#modeltheme-main-head .row {
+    display: flex;
+    align-items: center;
+}
+
+/* Account icon — fix sizing, spacing, vertical alignment */
+span.top-account {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 10px 13px;
+    line-height: 1;
+    vertical-align: middle;
+    border-radius: 6px !important;
+    font-size: 16px;
+    transition: background 250ms ease, color 250ms ease;
+    
+}
+
+/* Cart icon — inline-flex for consistent centering */
+span.top-cart {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 13px;
+    line-height: 1;
+    vertical-align: middle;
+    border-radius: 6px !important;
+    font-size: 16px;
+    position: relative;
+}
+
+/* Cart count badge */
+span.top-cart .cart-number {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 18px;
+    height: 18px;
+    line-height: 18px;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 50%;
+    padding: 0 3px;
+}
+
+/* CTA "header-button" — reset the float and margin, use flexbox natural flow */
+.top-links p.header-button {
+    display: inline-flex !important;
+    align-items: center;
+    float: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1;
+}
+
+/* Keep CTA button tight and centered */
+.top-links p.header-button a,
+.first_header p.header-button a,
+.second_header p.header-button a {
+    display: inline-flex !important;
+    align-items: center;
+    white-space: nowrap;
+    padding: 11px 22px !important;
+    font-size: 12px !important;
+    letter-spacing: 0.5px;
+    line-height: 1 !important;
+    border-radius: 6px !important;
+}
+
+/* Fix Bootstrap column heights inside the nav so items can flex-align */
+#modeltheme-main-head .navbar-header.col-md-3,
+#modeltheme-main-head #navbar.col-md-6,
+#modeltheme-main-head .top-links.col-md-3 {
+    float: none;
+    display: flex;
+    align-items: center;
+}
+
+/* Logo area — keep vertically centered */
+#modeltheme-main-head .navbar-header.col-md-3 {
+    justify-content: flex-start;
+}
+
+/* Nav menu area */
+#modeltheme-main-head #navbar.col-md-6 {
+    justify-content: center;
+}
+
+
+/*  ========================================== */
+span.top-account {
+
+    background: darkorange;
+}
+
+.top-cart{
+    background: darkorange;
+}
+.shop_cart{
+    top: 5px;
+    position: absolute;
+    left: 5px;
+    color: darkorange;
+
+}
+
+.top-links.col-md-3{
+    position: relative;   
+}
+
+.header-button a{
+    right: 190px;
+    width: 200px;
+}
+.top-account{
+    top: 14px;
+}
+.top-cart{
+    top: 14px;
+    left: -67px;
+}
+
+
+/*=====================================*/
+
+.top-account.mobile-link {
+    position: relative !important;
+}
+.top-account.mobile-link {
+    position: absolute!important;
+    left: 0!important;
+
+}
+
+.top-account.mobile-link {
+    right: 0!important;
+    position: absolute!important;
+    top: 120px!important;
+    left: 1548px!important;
+}
+
+.top-account.mobile-link {
+    position: relative!important;
+    right: 0;
+    width: 10px;
+}
+
+
+/* -------------------------------------------------------
+   Responsive: show top-links down to 1101px (override parent 1100px hide)
+   On tablets/mobile it makes sense to still hide it
+   ------------------------------------------------------- */
+@media only screen and (min-width: 1101px) {
+    .top-links {
+        display: flex !important;
+    }
+}
+
+@media only screen and (max-width: 1100px) {
+    .top-links {
+        display: none !important;
+    }
+}
+
+
