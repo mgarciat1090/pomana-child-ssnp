@@ -238,3 +238,19 @@ add_action('wp_head', function() {
     })();
     </script>";
 }, 1); // prioridad 1 = antes que cualquier otro script
+
+add_filter('wp_mail', function($args) {
+    error_log('TO: ' . print_r($args['to'], true));
+    error_log('SUBJECT: ' . $args['subject']);
+    error_log('BODY: ' . $args['message']);
+    error_log('HEADERS: ' . print_r($args['headers'], true));
+    return $args;
+});
+
+add_action('woocommerce_email_before_send', function($email) {
+    if ($email->id === 'customer_processing_order') {
+        error_log('SUBJECT: ' . $email->get_subject());
+        error_log('BODY: ' . $email->get_content());
+    }
+}, 10, 1);
+

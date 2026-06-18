@@ -220,6 +220,12 @@ span.top-cart .cart-number {
     width: 10px;
 }
 
+.high-padding {
+    margin-top: 100px;
+}
+
+
+
 /* -------------------------------------------------------
    Responsive: show top-links down to 1101px (override parent 1100px hide)
    On tablets/mobile it makes sense to still hide it
