@@ -253,4 +253,3 @@ add_action('woocommerce_email_before_send', function($email) {
         error_log('BODY: ' . $email->get_content());
     }
 }, 10, 1);
-

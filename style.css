@@ -105,6 +105,9 @@ i.fa.fa-user-circle {
 .woocommerce-notices-wrapper{
 	z-index: 10001;
 }
+.high-padding {
+    margin-top: 100px;
+}
 
 /* =========================================================
    TOP-LINKS (.top-links.col-md-3) — Visual fix & alignment
